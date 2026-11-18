@@ -1,0 +1,182 @@
+<template>
+    <lightning-card title="Simple Shop" icon-name="standard:product">
+        <div slot="actions">
+            <template if:true={showProducts}>
+                <lightning-button label={cartButtonLabel} variant="brand" icon-name="utility:cart"
+                    onclick={handleViewCart}>
+                </lightning-button>
+            </template>
+            <template if:true={showCart}>
+                <lightning-button label="Back to Products" icon-name="utility:back" onclick={handleBack}>
+                </lightning-button>
+            </template>
+        </div>
+
+        <div class="slds-p-around_medium">
+
+            <!-- SCREEN 1: PRODUCT LIST -->
+            <template if:true={showProducts}>
+                <!-- Category Dropdown on Left & Search Bar on Right -->
+                <div
+                    class="slds-grid slds-grid_vertical-align-center slds-m-bottom_medium slds-gutters_small filter-bar-row">
+                    <div class="slds-col slds-size_5-of-12">
+                        <lightning-combobox name="categoryFilter" variant="label-hidden" value={selectedCategory}
+                            placeholder="All Categories" options={categoryOptions} onchange={handleCategoryChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_7-of-12">
+                        <lightning-input type="search" placeholder="Search products..." variant="label-hidden"
+                            value={searchTerm} onchange={handleSearchChange}>
+                        </lightning-input>
+                    </div>
+                </div>
+
+                <template if:true={hasProducts}>
+                    <div class="product-grid">
+                        <template for:each={filteredProducts} for:item="p">
+                            <div key={p.Id} class="product-card slds-box slds-p-around_medium">
+                                <div>
+                                    <!-- Product Image with fallback -->
+                                    <template if:true={p.Product_Image_URL__c}>
+                                        <div class="product-img-wrapper">
+                                            <img src={p.Product_Image_URL__c} alt={p.Name} class="product-img"
+                                                onerror={handleImageError} />
+                                        </div>
+                                    </template>
+                                    <template if:false={p.Product_Image_URL__c}>
+                                        <div class="product-img-placeholder">
+                                            <span>📦</span>
+                                        </div>
+                                    </template>
+
+                                    <!-- Category Badge -->
+                                    <template if:true={p.Product_Category__c}>
+                                        <span class="category-badge">{p.Product_Category__c}</span>
+                                    </template>
+
+                                    <h3 class="slds-text-heading_small slds-truncate font-bold slds-m-top_x-small"
+                                        title={p.Name}>
+                                        {p.Name}
+                                    </h3>
+                                    <p class="slds-text-color_weak slds-m-vertical_x-small slds-truncate"
+                                        title={p.Description__c}>
+                                        {p.Description__c}
+                                    </p>
+                                </div>
+                                <div
+                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_small">
+                                    <span class="price-tag">
+                                        <lightning-formatted-number value={p.Price__c} format-style="currency"
+                                            currency-code="INR">
+                                        </lightning-formatted-number>
+                                    </span>
+                                    <lightning-button label="Add" variant="brand" icon-name="utility:add" data-id={p.Id}
+                                        onclick={handleAddToCart}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:false={hasProducts}>
+                    <p class="slds-text-color_weak slds-text-align_center slds-p-around_large">
+                        No products found matching your filter or search.
+                    </p>
+                </template>
+            </template>
+
+            <!-- SCREEN 2: CART -->
+            <template if:true={showCart}>
+                <template if:true={hasCartItems}>
+                    <div class="cart-container">
+                        <template for:each={cartItems} for:item="item">
+                            <div key={item.productId}
+                                class="cart-row slds-grid slds-grid_vertical-align-center slds-p-vertical_small">
+                                <!-- Thumbnail -->
+                                <template if:true={item.imageUrl}>
+                                    <div class="slds-m-right_small">
+                                        <img src={item.imageUrl} alt={item.productName} class="cart-img"
+                                            onerror={handleImageError} />
+                                    </div>
+                                </template>
+
+                                <div class="slds-col slds-size_5-of-12">
+                                    <div class="font-bold">{item.productName}</div>
+                                    <div class="slds-text-color_weak slds-text-body_small">
+                                        <lightning-formatted-number value={item.price} format-style="currency"
+                                            currency-code="INR"></lightning-formatted-number> each
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_3-of-12 slds-grid slds-grid_vertical-align-center">
+                                    <lightning-button-icon icon-name="utility:dash" size="small"
+                                        data-id={item.productId} onclick={handleDecrement}></lightning-button-icon>
+                                    <span class="slds-p-horizontal_small font-bold">{item.quantity}</span>
+                                    <lightning-button-icon icon-name="utility:add" size="small" data-id={item.productId}
+                                        onclick={handleIncrement}></lightning-button-icon>
+                                </div>
+                                <div class="slds-col slds-size_3-of-12 slds-text-align_right font-bold">
+                                    <lightning-formatted-number value={item.subtotal} format-style="currency"
+                                        currency-code="INR"></lightning-formatted-number>
+                                </div>
+                                <div class="slds-col slds-size_1-of-12 slds-text-align_right">
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" size="small"
+                                        data-id={item.productId} onclick={handleRemove}
+                                        title="Remove"></lightning-button-icon>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="total-row slds-p-top_medium slds-m-top_medium">
+                            <div
+                                class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                                <span class="slds-text-heading_small font-bold">Total Amount:</span>
+                                <span class="slds-text-heading_medium font-bold text-green">
+                                    <lightning-formatted-number value={cartTotal} format-style="currency"
+                                        currency-code="INR"></lightning-formatted-number>
+                                </span>
+                            </div>
+
+                            <div class="slds-m-bottom_medium">
+                                <lightning-input
+                                    label="Customer Name"
+                                    value={customerName}
+                                    onchange={handleNameChange}
+                                    placeholder="Enter your name"
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <lightning-button label={placeOrderButtonLabel} variant="brand" class="slds-m-right_x-small"
+                                disabled={isPlacingOrder} onclick={handlePlaceOrder}>
+                            </lightning-button>
+                            <lightning-button label="Continue Shopping" onclick={handleBack}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:false={hasCartItems}>
+                    <div class="slds-text-align_center slds-p-around_large">
+                        <p class="slds-text-heading_small slds-m-bottom_medium">Your cart is empty.</p>
+                        <lightning-button label="Browse Products" variant="brand"
+                            onclick={handleBack}></lightning-button>
+                    </div>
+                </template>
+            </template>
+
+            <!-- SCREEN 3: ORDER CONFIRMED -->
+            <template if:true={showThanks}>
+                <div class="slds-text-align_center slds-p-around_large">
+                    <lightning-icon icon-name="action:approval" size="medium"
+                        class="slds-m-bottom_small"></lightning-icon>
+                    <h2 class="slds-text-heading_medium font-bold slds-m-top_small">Thank You, {confirmedCustomerName}!</h2>
+                    <p class="slds-m-vertical_small">
+                        Your order <strong>{confirmedOrderNumber}</strong> has been placed successfully.
+                    </p>
+                    <lightning-button label="Continue Shopping" variant="brand" onclick={handleBack}></lightning-button>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

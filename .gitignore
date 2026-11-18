@@ -1,0 +1,11 @@
+# Salesforce CLI state (local auth/source tracking)
+.sf/
+.sfdx/
+.localdevserver/
+
+# Dependencies
+node_modules/
+
+# Logs and coverage
+npm-debug.log*
+coverage/

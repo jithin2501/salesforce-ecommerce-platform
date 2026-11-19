@@ -93,19 +93,20 @@
                         <template for:each={cartItems} for:item="item">
                             <div key={item.productId}
                                 class="cart-row slds-grid slds-grid_vertical-align-center slds-p-vertical_small">
-                                <!-- Thumbnail -->
-                                <template if:true={item.imageUrl}>
-                                    <div class="slds-m-right_small">
-                                        <img src={item.imageUrl} alt={item.productName} class="cart-img"
-                                            onerror={handleImageError} />
-                                    </div>
-                                </template>
-
-                                <div class="slds-col slds-size_5-of-12">
-                                    <div class="font-bold">{item.productName}</div>
-                                    <div class="slds-text-color_weak slds-text-body_small">
-                                        <lightning-formatted-number value={item.price} format-style="currency"
-                                            currency-code="INR"></lightning-formatted-number> each
+                                <div class="slds-col slds-size_5-of-12 slds-grid slds-grid_vertical-align-center">
+                                    <!-- Thumbnail -->
+                                    <template if:true={item.imageUrl}>
+                                        <div class="slds-m-right_small slds-shrink-none">
+                                            <img src={item.imageUrl} alt={item.productName} class="cart-img"
+                                                onerror={handleImageError} />
+                                        </div>
+                                    </template>
+                                    <div>
+                                        <div class="font-bold">{item.productName}</div>
+                                        <div class="slds-text-color_weak slds-text-body_small">
+                                            <lightning-formatted-number value={item.price} format-style="currency"
+                                                currency-code="INR"></lightning-formatted-number> each
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="slds-col slds-size_3-of-12 slds-grid slds-grid_vertical-align-center">

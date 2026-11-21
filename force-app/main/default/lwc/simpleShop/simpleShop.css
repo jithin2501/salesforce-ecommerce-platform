@@ -7,10 +7,8 @@
     padding: 1rem;
 }
 
-/* ================================
-   FILTER BAR (Category & Search)
-   ================================ */
 .filter-bar {
+    /* SCREEN 1: FILTER BAR */
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -26,10 +24,8 @@
     flex: 7;
 }
 
-/* ================================
-   PRODUCT GRID & CARDS
-   ================================ */
 .product-grid {
+    /* SCREEN 2: PRODUCTS GRID */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
@@ -56,7 +52,7 @@
     flex-direction: column;
 }
 
-/* Product Image in Grid */
+/* Product Images */
 .product-img-wrapper {
     width: 100%;
     height: 140px;
@@ -98,7 +94,7 @@
     margin-top: 0.4rem;
 }
 
-/* Product Title & Description */
+/* Product Typography */
 .product-title {
     font-size: 0.95rem;
     font-weight: 700;
@@ -118,7 +114,7 @@
     text-overflow: ellipsis;
 }
 
-/* Product Card Footer (Price & Add Button) */
+/* Product Footer (Price & Add Button) */
 .product-footer {
     display: flex;
     align-items: center;
@@ -132,7 +128,7 @@
     color: #2e844a;
 }
 
-/* Empty Products State */
+/* Empty State */
 .empty-products-msg {
     color: #706e6b;
     text-align: center;
@@ -140,10 +136,8 @@
     font-size: 0.95rem;
 }
 
-/* ================================
-   CART & CHECKOUT
-   ================================ */
 .cart-container {
+    /* SCREEN 3: CART */
     max-width: 650px;
     margin: 0 auto;
 }
@@ -260,10 +254,8 @@
     margin-bottom: 1rem;
 }
 
-/* ================================
-   ORDER CONFIRMATION (SCREEN 3)
-   ================================ */
 .thanks-box {
+    /* SCREEN 4: THANKS */
     text-align: center;
     padding: 2.5rem;
 }

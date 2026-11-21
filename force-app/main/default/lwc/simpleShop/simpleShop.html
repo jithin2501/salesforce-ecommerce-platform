@@ -14,9 +14,7 @@
 
         <div class="shop-body">
 
-            <!-- SCREEN 1: PRODUCT LIST -->
-            <template if:true={showProducts}>
-                <!-- Category Dropdown on Left & Search Bar on Right -->
+            <template if:true={showProducts}> <!-- SCREEN 1: PRODUCT LIST & SEARCH -->
                 <div class="filter-bar">
                     <div class="filter-category">
                         <lightning-combobox name="categoryFilter" variant="label-hidden" value={selectedCategory}
@@ -35,7 +33,7 @@
                         <template for:each={filteredProducts} for:item="p">
                             <div key={p.Id} class="product-card">
                                 <div class="product-info">
-                                    <!-- Product Image with fallback -->
+
                                     <template if:true={p.Product_Image_URL__c}>
                                         <div class="product-img-wrapper">
                                             <img src={p.Product_Image_URL__c} alt={p.Name} class="product-img"
@@ -48,7 +46,6 @@
                                         </div>
                                     </template>
 
-                                    <!-- Category Badge -->
                                     <template if:true={p.Product_Category__c}>
                                         <span class="category-badge">{p.Product_Category__c}</span>
                                     </template>
@@ -82,14 +79,12 @@
                 </template>
             </template>
 
-            <!-- SCREEN 2: CART -->
-            <template if:true={showCart}>
+            <template if:true={showCart}> <!--CART & CHECKOUT -->
                 <template if:true={hasCartItems}>
                     <div class="cart-container">
                         <template for:each={cartItems} for:item="item">
                             <div key={item.productId} class="cart-row">
                                 <div class="cart-item-col">
-                                    <!-- Thumbnail -->
                                     <template if:true={item.imageUrl}>
                                         <img src={item.imageUrl} alt={item.productName} class="cart-img"
                                             onerror={handleImageError} />
@@ -131,12 +126,8 @@
                             </div>
 
                             <div class="checkout-input-group">
-                                <lightning-input
-                                    label="Customer Name"
-                                    value={customerName}
-                                    onchange={handleNameChange}
-                                    placeholder="Enter your name"
-                                    required>
+                                <lightning-input label="Customer Name" value={customerName} onchange={handleNameChange}
+                                    placeholder="Enter your name" required>
                                 </lightning-input>
                             </div>
                             <div class="checkout-actions">
@@ -159,8 +150,7 @@
                 </template>
             </template>
 
-            <!-- SCREEN 3: ORDER CONFIRMED -->
-            <template if:true={showThanks}>
+            <template if:true={showThanks}> <!-- SCREEN 3: ORDER CONFIRMED -->
                 <div class="thanks-box">
                     <lightning-icon icon-name="action:approval" size="medium"></lightning-icon>
                     <h2 class="thanks-title">Thank You, {confirmedCustomerName}!</h2>

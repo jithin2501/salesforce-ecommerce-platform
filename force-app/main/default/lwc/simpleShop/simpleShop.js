@@ -4,42 +4,45 @@ import getProducts from '@salesforce/apex/ShopController.getProducts';
 import placeOrder from '@salesforce/apex/ShopController.placeOrder';
 
 export default class SimpleShop extends LightningElement {
-    products = [];
-    cartItems = [];
-    searchTerm = '';
+
+    screen = 'products'; // COMPONENT STATE & NAVIGATION Active screen: 'products' | 'cart' | 'thanks'
+
+    get showProducts() {
+        return this.screen === 'products';
+    }
+
+    get showCart() {
+        return this.screen === 'cart';
+    }
+
+    get showThanks() {
+        return this.screen === 'thanks';
+    }
+
+    handleViewCart() {
+        this.screen = 'cart';
+    }
+
+    handleBack() {
+        this.screen = 'products';
+    }
+
+    products = []; //APEX DATABASE INTEGRATION
+
+    @wire(getProducts)
+    wiredProducts({ data, error }) {
+        if (data) {
+            this.products = data;
+        } else if (error) {
+            this.showToast('Error', this.getMessage(error), 'error');
+        }
+    }
+
+
+    searchTerm = ''; //SEARCH & CATEGORY FILTERING LOGIC
     selectedCategory = 'All';
-    screen = 'products';
-    confirmedOrderNumber = '';
-    confirmedCustomerName = '';
-    isPlacingOrder = false;
-    customerName = '';
 
-    get showProducts() { return this.screen === 'products'; }
-    get showCart() { return this.screen === 'cart'; }
-    get showThanks() { return this.screen === 'thanks'; }
-    get hasCartItems() { return this.cartItems.length > 0; }
-
-    get cartCount() {
-        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    }
-
-    get cartTotal() {
-        return this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
-    }
-
-    get cartButtonLabel() {
-        return `View Cart (${this.cartCount})`;
-    }
-
-    get placeOrderButtonLabel() {
-        return this.isPlacingOrder ? 'Placing Order...' : 'Place Order';
-    }
-
-    get hasProducts() {
-        return this.filteredProducts.length > 0;
-    }
-
-    // Dynamic Category dropdown options extracted from products
+    // Generates unique category options for dropdown from the products list
     get categoryOptions() {
         const categories = new Set();
         this.products.forEach(p => {
@@ -55,14 +58,12 @@ export default class SimpleShop extends LightningElement {
         return options;
     }
 
-    // Filter products by both category and search term
-    get filteredProducts() {
+    get filteredProducts() { // In-memory filtering by selected category AND search term (Name + Description)
         let list = this.products;
 
         if (this.selectedCategory && this.selectedCategory !== 'All') {
             list = list.filter(p => p.Product_Category__c === this.selectedCategory);
         }
-
         if (this.searchTerm) {
             const term = this.searchTerm.toLowerCase();
             list = list.filter(p =>
@@ -74,25 +75,34 @@ export default class SimpleShop extends LightningElement {
         return list;
     }
 
-    @wire(getProducts)
-    wiredProducts({ data, error }) {
-        if (data) {
-            this.products = data;
-        } else if (error) {
-            this.showToast('Error', this.getMessage(error), 'error');
-        }
-    }
-
-    handleCategoryChange(event) {
-        this.selectedCategory = event.detail.value;
+    get hasProducts() {
+        return this.filteredProducts.length > 0;
     }
 
     handleSearchChange(event) {
         this.searchTerm = event.target.value;
     }
 
-    handleImageError(event) {
-        event.target.style.display = 'none';
+    handleCategoryChange(event) {
+        this.selectedCategory = event.detail.value;
+    }
+
+    cartItems = []; //CART MANAGEMENT (Add, Increment, Decrement, Remove, Totals)
+
+    get hasCartItems() {
+        return this.cartItems.length > 0;
+    }
+
+    get cartCount() {
+        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
+
+    get cartTotal() {
+        return this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+    }
+
+    get cartButtonLabel() {
+        return `View Cart (${this.cartCount})`;
     }
 
     handleAddToCart(event) {
@@ -151,12 +161,13 @@ export default class SimpleShop extends LightningElement {
         this.cartItems = this.cartItems.filter(i => i.productId !== productId);
     }
 
-    handleViewCart() {
-        this.screen = 'cart';
-    }
+    customerName = ''; //CHECKOUT & ORDER PLACEMENT
+    isPlacingOrder = false;
+    confirmedOrderNumber = '';
+    confirmedCustomerName = '';
 
-    handleBack() {
-        this.screen = 'products';
+    get placeOrderButtonLabel() {
+        return this.isPlacingOrder ? 'Placing Order...' : 'Place Order';
     }
 
     handleNameChange(event) {
@@ -196,6 +207,10 @@ export default class SimpleShop extends LightningElement {
             .finally(() => {
                 this.isPlacingOrder = false;
             });
+    }
+
+    handleImageError(event) { // UI HELPERS & UTILITIES
+        event.target.style.display = 'none';
     }
 
     getMessage(error) {

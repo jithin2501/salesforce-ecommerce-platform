@@ -24,8 +24,7 @@ public with sharing class ShopController {
             total += (item.price * item.quantity);
         }
 
-        // Create Order
-        Ec_Order__c ord = new Ec_Order__c(
+        Ec_Order__c ord = new Ec_Order__c(  // This creates a new order record in Salesforce
             Order_Date__c   = Date.today(),
             Total_Amount__c = total,
             Status__c       = 'Placed',
@@ -33,8 +32,7 @@ public with sharing class ShopController {
         );
         insert ord;
 
-        // Create Order Items
-        List<Ec_Order_Item__c> orderItems = new List<Ec_Order_Item__c>();
+        List<Ec_Order_Item__c> orderItems = new List<Ec_Order_Item__c>();  // Create Order Items
         for (CartItemWrapper item : items) {
             orderItems.add(new Ec_Order_Item__c(
                 Ec_Order__c   = ord.Id,

@@ -4,7 +4,7 @@ public with sharing class ShopController {
     @AuraEnabled(cacheable=true) // 1. Get all products (including image URL and Category)
     public static List<Ec_Product__c> getProducts() {
         return [
-            SELECT Id, Name, Price__c, Product_Image_URL__c, Product_Category__c
+            SELECT Id, Name, Price__c, Description__c, Product_Image_URL__c, Product_Category__c
             FROM Ec_Product__c
             ORDER BY Name
         ];

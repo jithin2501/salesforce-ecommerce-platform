@@ -27,7 +27,7 @@ export default class SimpleShop extends LightningElement {
         this.screen = 'products';
     }
 
-    products = []; //APEX DATABASE INTEGRATION
+    products = [];
 
     @wire(getProducts)
     wiredProducts({ data, error }) {
@@ -58,7 +58,7 @@ export default class SimpleShop extends LightningElement {
         return options;
     }
 
-    get filteredProducts() { // In-memory filtering by selected category AND search term (Name + Description)
+    get filteredProducts() {
         let list = this.products;
 
         if (this.selectedCategory && this.selectedCategory !== 'All') {

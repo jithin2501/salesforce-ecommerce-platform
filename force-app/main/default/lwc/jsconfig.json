@@ -6,7 +6,8 @@
             "c/*": [
                 "*"
             ]
-        }
+        },
+        "ignoreDeprecations": "5.0"
     },
     "include": [
         "**/*",
